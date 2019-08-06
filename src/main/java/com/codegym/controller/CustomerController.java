@@ -1,85 +1,103 @@
 package com.codegym.controller;
 
 import com.codegym.model.Customer;
+import com.codegym.model.Province;
 import com.codegym.service.CustomerService;
+import com.codegym.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@PropertySource("classpath:upload_file.properties")
-
 public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping("/")
-    public ModelAndView listCustomers() {
-        Iterable<Customer> customerList = customerService.findAll();
+    @Autowired
+    private ProvinceService provinceService;
 
-        ModelAndView modelAndView = new ModelAndView("/customer/list");
-        modelAndView.addObject("customers", customerList);
-        return modelAndView;
+    @ModelAttribute("provinces")
+    public Iterable<Province> provinces(){
+        return provinceService.findAll();
     }
 
-
-    @GetMapping("/customer/create")
-    public ModelAndView showCreateForm() {
-        ModelAndView modelAndView = new ModelAndView("/customer/create-customer");
-        modelAndView.addObject("customer", new Customer());
-        return modelAndView;
-    }
-
-    @PostMapping("/customer/add")
-    public ModelAndView saveCustomer(@ModelAttribute Customer customer) {
-        customerService.save(customer);
-
-        ModelAndView modelAndView = new ModelAndView("/customer/create-customer");
-        modelAndView.addObject("customer", new Customer());
-        modelAndView.addObject("message", "created.");
-        return modelAndView;
-    }
-
-    @GetMapping("search")
-    public ModelAndView searchCustomer(@RequestParam("name") String name) {
-        Iterable<Customer> customers = customerService.findByName(name);
-        ModelAndView modelAndView = new ModelAndView("/customer/search");
-        modelAndView.addObject("customers", customers);
-        return modelAndView;
-    }
-
-    @GetMapping("/edit/{id}")
-    public ModelAndView showEditForm(@PathVariable Long id) {
-        Customer customer = customerService.findById(id);
-        if (customer != null) {
-            ModelAndView modelAndView = new ModelAndView("/customer/edit-customer");
-            modelAndView.addObject("customer", customer);
-            return modelAndView;
-        }else {
-            ModelAndView modelAndView = new ModelAndView("/customer/error-404");
-            return modelAndView;
-        }
-    }
-
-    @PostMapping("edit")
-    public ModelAndView editCustomer(@ModelAttribute("customer")Customer customer) {
-        customerService.save(customer);
-        ModelAndView modelAndView = new ModelAndView("/customer/edit-customer");
-        modelAndView.addObject("customer", customer);
-        modelAndView.addObject("message", "Customer updated successfully");
-        return modelAndView;
-    }
-
-    @GetMapping("/delete/{id}")
-    public ModelAndView deleteCustomer(@PathVariable("id") Long id) {
-        customerService.delete(id);
+    @GetMapping("/customers")
+    public ModelAndView listCustomers(){
         Iterable<Customer> customers = customerService.findAll();
         ModelAndView modelAndView = new ModelAndView("/customer/list");
         modelAndView.addObject("customers", customers);
         return modelAndView;
     }
+
+    @GetMapping("/create-customer")
+    public ModelAndView showCreateForm(){
+        ModelAndView modelAndView = new ModelAndView("/customer/create");
+        modelAndView.addObject("customer", new Customer());
+        return modelAndView;
+    }
+
+    @PostMapping("/create-customer")
+    public ModelAndView saveCustomer(@ModelAttribute("customer") Customer customer){
+        customerService.save(customer);
+        ModelAndView modelAndView = new ModelAndView("/customer/create");
+        modelAndView.addObject("customer", new Customer());
+        modelAndView.addObject("message", "New customer created successfully");
+        return modelAndView;
+    }
+
+    @GetMapping("/edit-customer/{id}")
+    public ModelAndView showEditForm(@PathVariable Long id){
+        Customer customer = customerService.findById(id);
+        if(customer != null) {
+            ModelAndView modelAndView = new ModelAndView("/customer/edit");
+            modelAndView.addObject("customer", customer);
+            return modelAndView;
+
+        }else {
+            ModelAndView modelAndView = new ModelAndView("/error.404");
+            return modelAndView;
+        }
+    }
+
+    @PostMapping("/edit-customer")
+    public ModelAndView updateCustomer(@ModelAttribute("customer") Customer customer){
+        customerService.save(customer);
+        ModelAndView modelAndView = new ModelAndView("/customer/edit");
+        modelAndView.addObject("customer", customer);
+        modelAndView.addObject("message", "Customer updated successfully");
+        return modelAndView;
+    }
+
+    @GetMapping("/delete-customer/{id}")
+    public ModelAndView showDeleteForm(@PathVariable Long id){
+        Customer customer = customerService.findById(id);
+        if(customer != null) {
+            ModelAndView modelAndView = new ModelAndView("/customer/delete");
+            modelAndView.addObject("customer", customer);
+            return modelAndView;
+
+        }else {
+            ModelAndView modelAndView = new ModelAndView("/error.404");
+            return modelAndView;
+        }
+    }
+
+    @PostMapping("/delete-customer")
+    public String deleteCustomer(@ModelAttribute("customer") Customer customer){
+        customerService.remove(customer.getId());
+        return "redirect:customers";
+    }
+
+//    @GetMapping("search")
+//    public ModelAndView searchCustomer(@RequestParam("name") String name) {
+//        Iterable<Customer> customers = customerService.findByName(name);
+//        ModelAndView modelAndView = new ModelAndView("/customer/search");
+//        modelAndView.addObject("customers", customers);
+//        return modelAndView;
+//    }
+
+
 
 }

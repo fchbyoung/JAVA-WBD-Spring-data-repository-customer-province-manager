@@ -1,8 +1,12 @@
 package com.codegym;
 
+import com.codegym.formatter.ProvinceFormatter;
 import com.codegym.repository.CustomerRepository;
+import com.codegym.repository.ProvinceRepository;
 import com.codegym.service.CustomerService;
+import com.codegym.service.ProvinceService;
 import com.codegym.service.impl.CustomerServiceImpl;
+import com.codegym.service.impl.ProvinceServiceImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +19,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -61,6 +66,11 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
 //    }
 
     @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(new ProvinceFormatter(applicationContext.getBean(ProvinceService.class)));
+    }
+
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
@@ -70,7 +80,10 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
         return new CustomerServiceImpl();
     }
 
-
+    @Bean
+    public ProvinceService provinceService() {
+        return new ProvinceServiceImpl();
+    }
     //Thymeleaf Configuration
     @Bean
     public SpringResourceTemplateResolver templateResolver() {

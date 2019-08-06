@@ -1,10 +1,10 @@
 package com.codegym.service.impl;
 
 import com.codegym.model.Customer;
+import com.codegym.model.Province;
 import com.codegym.repository.CustomerRepository;
 import com.codegym.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 public class CustomerServiceImpl implements CustomerService {
 
@@ -18,9 +18,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer findById(Long id) {
-        return customerRepository.findById(id);
+        return customerRepository.findOne(id);
     }
-
 
     @Override
     public Iterable<Customer> findByName(String name) {
@@ -33,9 +32,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void remove(Long id) {
         customerRepository.delete(id);
     }
 
-
+    @Override
+    public Iterable<Customer> findAllByProvince(Province province) {
+        return customerRepository.findAllByProvince(province);
+    }
 }

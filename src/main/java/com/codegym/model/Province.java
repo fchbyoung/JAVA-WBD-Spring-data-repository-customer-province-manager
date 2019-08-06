@@ -1,21 +1,25 @@
 package com.codegym.model;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "provinces")
 public class Province {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
     private String name;
 
-    @OneToMany(targetEntity = Customer.class)
-    private List<Customer> customers;
+    @OneToMany(mappedBy = "province")
+    private Set<Customer> customers;
 
     public Province() {
+    }
+
+    public Province(String name) {
+        this.name = name;
     }
 
     public Long getId() {
@@ -34,11 +38,11 @@ public class Province {
         this.name = name;
     }
 
-    public List<Customer> getCustomers() {
+    public Set<Customer> getCustomers() {
         return customers;
     }
 
-    public void setCustomers(List<Customer> customers) {
+    public void setCustomers(Set<Customer> customers) {
         this.customers = customers;
     }
 }
